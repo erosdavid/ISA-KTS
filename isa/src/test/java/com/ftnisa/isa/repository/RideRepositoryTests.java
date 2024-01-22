@@ -15,9 +15,12 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 
+import javax.persistence.criteria.CriteriaBuilder;
+
 import static org.junit.Assert.assertEquals;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,8 +38,6 @@ public class RideRepositoryTests {
 
     @Autowired
     private UserRepository userRepository;
-
-
 
 
 
@@ -97,7 +98,7 @@ public class RideRepositoryTests {
 
 
     @Test
-    public void findByDriverAndStartTimeBetweenAndRideStatus_givenValidDriverAndStatusAndStartTimeAndFinishTime_returnsRides() {
+    public void findByDriverAndStartTimeBetweenAndRideStatus_givenValidDriverAndStatusAndStartTimeInterval_returnsRides() {
 
         Driver driver = RepositoryTestConstants.createDriver();
         Ride ride1 = new Ride();
@@ -181,9 +182,11 @@ public class RideRepositoryTests {
         rideRepository.save(ride2);
         rideRepository.save(ride3);
 
-        List<Ride> foundRides = rideRepository.findAllByDriverAndRideStatus(driver, RideStatus.ACTIVE);
+        List<Ride> foundRides = rideRepository.findAllByDriverAndRideStatusIsNotOrderByIdDesc(driver, RideStatus.FINISHED);
 
         assertEquals(2, foundRides.size());
+        assertEquals(Optional.of(3), Optional.of(foundRides.get(0).getId()));
+        assertEquals(Optional.of(2), Optional.of(foundRides.get(1).getId()));
     }
 
     @Test
@@ -225,6 +228,205 @@ public class RideRepositoryTests {
 
         assertEquals(1, foundRides.size());
     }
+
+
+    @Test
+    public void findByPassengerAndStartTimeBetween_givenValidPassengerAndStartTimeInterval_returnsRides() {
+
+        User passenger1 = RepositoryTestConstants.createUser();
+        User passenger2 = RepositoryTestConstants.createUser();
+        Ride ride1 = new Ride();
+        Ride ride2 = new Ride();
+        Ride ride3 = new Ride();
+        ride1.setRideStatus(RideStatus.FINISHED);
+        ride2.setRideStatus(RideStatus.ACTIVE);
+        ride3.setRideStatus(RideStatus.ACTIVE);
+        ride1.setPassenger(passenger1);
+        ride2.setPassenger(passenger2);
+        ride3.setPassenger(passenger2);
+        ride1.setStartTime(LocalDateTime.now().minusDays(5));
+        ride2.setStartTime(LocalDateTime.now().minusDays(4));
+        ride3.setStartTime(LocalDateTime.now().plusDays(2));
+        userRepository.save(passenger1);
+        userRepository.save(passenger2);
+        rideRepository.save(ride1);
+        rideRepository.save(ride2);
+        rideRepository.save(ride3);
+
+        List<Ride> foundRides = rideRepository.findByPassengerAndStartTimeBetween(passenger2, LocalDateTime.now().minusDays(7), LocalDateTime.now());
+
+        assertEquals(1, foundRides.size());
+
+    }
+
+
+    @Test
+    public void findByPassengerAndStartTimeBetweenAndRideStatus_givenValidPassengerAndStartTimeIntervalAndStatus_returnsRides() {
+
+        User passenger1 = RepositoryTestConstants.createUser();
+        User passenger2 = RepositoryTestConstants.createUser();
+        Ride ride1 = new Ride();
+        Ride ride2 = new Ride();
+        Ride ride3 = new Ride();
+        Ride ride4 = new Ride();
+        ride1.setRideStatus(RideStatus.ACTIVE);
+        ride2.setRideStatus(RideStatus.ACTIVE);
+        ride3.setRideStatus(RideStatus.ACTIVE);
+        ride4.setRideStatus(RideStatus.FINISHED);
+        ride1.setPassenger(passenger1);
+        ride2.setPassenger(passenger2);
+        ride3.setPassenger(passenger2);
+        ride4.setPassenger(passenger2);
+        ride1.setStartTime(LocalDateTime.now().minusDays(5));
+        ride2.setStartTime(LocalDateTime.now().minusDays(4));
+        ride3.setStartTime(LocalDateTime.now().plusDays(2));
+        ride4.setStartTime(LocalDateTime.now().minusDays(3));
+        userRepository.save(passenger1);
+        userRepository.save(passenger2);
+        rideRepository.save(ride1);
+        rideRepository.save(ride2);
+        rideRepository.save(ride3);
+        rideRepository.save(ride4);
+
+        List<Ride> foundRides = rideRepository.findByPassengerAndStartTimeBetweenAndRideStatus(passenger2, LocalDateTime.now().minusDays(7), LocalDateTime.now(), RideStatus.ACTIVE);
+
+        assertEquals(1, foundRides.size());
+
+    }
+
+
+    @Test
+    public void findByStartTimeBetweenAndRideStatus_givenValidStatusAndStartTimeInterval_returnsRides() {
+
+        Ride ride1 = new Ride();
+        Ride ride2 = new Ride();
+        Ride ride3 = new Ride();
+        Ride ride4 = new Ride();
+        ride1.setRideStatus(RideStatus.ACTIVE);
+        ride2.setRideStatus(RideStatus.ACTIVE);
+        ride3.setRideStatus(RideStatus.ACTIVE);
+        ride4.setRideStatus(RideStatus.FINISHED);
+        ride1.setStartTime(LocalDateTime.now().minusDays(5));
+        ride2.setStartTime(LocalDateTime.now().minusDays(4));
+        ride3.setStartTime(LocalDateTime.now().plusDays(2));
+        ride4.setStartTime(LocalDateTime.now().minusDays(3));
+        rideRepository.save(ride1);
+        rideRepository.save(ride2);
+        rideRepository.save(ride3);
+        rideRepository.save(ride4);
+
+        List<Ride> foundRides = rideRepository.findByStartTimeBetweenAndRideStatus(LocalDateTime.now().minusDays(7), LocalDateTime.now(), RideStatus.ACTIVE);
+
+        assertEquals(2, foundRides.size());
+
+    }
+
+    @Test
+    public void findByDriverAndRideStatusIn_givenValidStatusesAndDriver_returnsRides() {
+
+        Driver driver1 = RepositoryTestConstants.createDriver();
+        Driver driver2 = RepositoryTestConstants.createDriver();
+        Ride ride1 = new Ride();
+        Ride ride2 = new Ride();
+        Ride ride3 = new Ride();
+        Ride ride4 = new Ride();
+        ride1.setRideStatus(RideStatus.ACTIVE);
+        ride2.setRideStatus(RideStatus.REJECTED);
+        ride3.setRideStatus(RideStatus.PENDING);
+        ride4.setRideStatus(RideStatus.FINISHED);
+        ride1.setDriver(driver1);
+        ride2.setDriver(driver1);
+        ride3.setDriver(driver1);
+        ride4.setDriver(driver2);
+        driverRepository.save(driver1);
+        driverRepository.save(driver2);
+        rideRepository.save(ride1);
+        rideRepository.save(ride2);
+        rideRepository.save(ride3);
+        rideRepository.save(ride4);
+        List<RideStatus> rideStatuses = new ArrayList<>();
+        rideStatuses.add(RideStatus.FINISHED);
+        rideStatuses.add(RideStatus.ACTIVE);
+
+        Ride foundRide = rideRepository.findByDriverAndRideStatusIn(driver1, rideStatuses);
+        Integer id = foundRide.getId();
+
+        assertEquals(Optional.of(1), Optional.of(id));
+
+    }
+
+    @Test
+    public void findByPassengerAndRideStatusIn_givenValidStatusesAndPassenger_returnsRides() {
+
+        User passenger1 = RepositoryTestConstants.createUser();
+        User passenger2 = RepositoryTestConstants.createUser();
+        Ride ride1 = new Ride();
+        Ride ride2 = new Ride();
+        Ride ride3 = new Ride();
+        Ride ride4 = new Ride();
+        ride1.setRideStatus(RideStatus.ACTIVE);
+        ride2.setRideStatus(RideStatus.REJECTED);
+        ride3.setRideStatus(RideStatus.PENDING);
+        ride4.setRideStatus(RideStatus.FINISHED);
+        ride1.setPassenger(passenger1);
+        ride2.setPassenger(passenger1);
+        ride3.setPassenger(passenger1);
+        ride4.setPassenger(passenger2);
+        userRepository.save(passenger1);
+        userRepository.save(passenger2);
+        rideRepository.save(ride1);
+        rideRepository.save(ride2);
+        rideRepository.save(ride3);
+        rideRepository.save(ride4);
+        List<RideStatus> rideStatuses = new ArrayList<>();
+        rideStatuses.add(RideStatus.FINISHED);
+        rideStatuses.add(RideStatus.ACTIVE);
+
+        Ride foundRide = rideRepository.findByPassengerAndRideStatusIn(passenger1, rideStatuses);
+
+        assertEquals(Optional.of(1), Optional.of(foundRide.getId()));
+
+    }
+
+    @Test
+    public void findByPassengerAndRideStatusIsNotOrderByIdDesc_givenValidStatusesAndPassenger_returnsRides() {
+
+        User passenger1 = RepositoryTestConstants.createUser();
+        User passenger2 = RepositoryTestConstants.createUser();
+        Ride ride1 = new Ride();
+        Ride ride2 = new Ride();
+        Ride ride3 = new Ride();
+        Ride ride4 = new Ride();
+        ride1.setRideStatus(RideStatus.ACTIVE);
+        ride2.setRideStatus(RideStatus.REJECTED);
+        ride3.setRideStatus(RideStatus.PENDING);
+        ride4.setRideStatus(RideStatus.FINISHED);
+        ride1.setPassenger(passenger1);
+        ride2.setPassenger(passenger1);
+        ride3.setPassenger(passenger1);
+        ride4.setPassenger(passenger2);
+        userRepository.save(passenger1);
+        userRepository.save(passenger2);
+        rideRepository.save(ride1);
+        rideRepository.save(ride2);
+        rideRepository.save(ride3);
+        rideRepository.save(ride4);
+        List<RideStatus> rideStatuses = new ArrayList<>();
+        rideStatuses.add(RideStatus.FINISHED);
+        rideStatuses.add(RideStatus.ACTIVE);
+
+        List<Ride> foundRides = rideRepository.findByPassengerAndRideStatusIsNotOrderByIdDesc(passenger1, RideStatus.PENDING);
+        assertEquals(2, foundRides.size());
+        assertEquals(Optional.of(2), Optional.of(foundRides.get(0).getId()));
+        assertEquals(Optional.of(1), Optional.of(foundRides.get(1).getId()));
+
+    }
+
+
+
+
+
+
 
 
 
