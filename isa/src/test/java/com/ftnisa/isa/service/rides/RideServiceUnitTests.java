@@ -4,6 +4,7 @@ import com.ftnisa.isa.constants.RideBookingConstants;
 import com.ftnisa.isa.dto.ride.RideBookingRequestDto;
 import com.ftnisa.isa.exception.TempRouteExpired;
 import com.ftnisa.isa.model.location.Location;
+import com.ftnisa.isa.model.ride.Panic;
 import com.ftnisa.isa.model.ride.Ride;
 import com.ftnisa.isa.model.ride.RideStatus;
 import com.ftnisa.isa.model.route.Route;
@@ -76,10 +77,6 @@ public class RideServiceUnitTests {
 
     @MockBean
     PanicRepository panicRepositoryMocked;
-
-
-
-
 
 
 
@@ -327,6 +324,104 @@ public class RideServiceUnitTests {
 
     }
 
+    @Test
+    public void requestQuickRideBookingRejectedBecauseNoAppropriateDriversWithoutNextBookingTest() throws Exception {
+
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.getUsername()).thenReturn("Dave");
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        when(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).thenReturn(user);
+        Mockito.when(userRepositoryMocked.findByUsername("Dave")).thenReturn(user);
+
+        Ride ride = new Ride();
+        List<Ride> rideList = new ArrayList<>();
+        List<Driver> activeDriverList = new ArrayList<>();
+        Driver driver = Mockito.mock(Driver.class);
+        activeDriverList.add(driver);
+        List<Driver> emptyDriverList = new ArrayList<>();
+        Mockito.when(rideRepositoryMocked.findAllByPassengerAndRideStatus(any(), any())).thenReturn(rideList);
+        Mockito.when(driverServiceMocked.getActiveDrivers()).thenReturn(activeDriverList);
+        Mockito.when(driverServiceMocked.getFreeActiveDrivers(activeDriverList)).thenReturn(emptyDriverList);
+        Mockito.when(driverServiceMocked.getDriversWithoutNextBooking(activeDriverList)).thenReturn(activeDriverList);
+
+        Route route = Mockito.mock(Route.class);
+        List<Route> routeList = new ArrayList<>();
+        routeList.add(route);
+        ride.setRoutes(routeList);
+        ride.setPetTransportFlag(false);
+        ride.setBabyTransportFlag(false);
+        VehicleType vehicleType = Mockito.mock(VehicleType.class);
+        ride.setVehicleType(vehicleType);
+        ride.setNumberOfPassengers(2);
+        Mockito.when(routeServiceMocked.fetchRouteLengthMeters(route)).thenReturn(4000l);
+        Mockito.when(routeServiceMocked.fetchRouteDurationMinutes(route)).thenReturn(6f);
+
+        RideServiceImpl rideServiceImpl = new RideServiceImpl(rideRepositoryMocked, driverServiceMocked, routeServiceMocked, userRepositoryMocked, panicRepositoryMocked, routeRepositoryMocked, notificationServiceMocked, vehicleTypeRepositoryMocked, template );
+        RideServiceImpl rideServiceSpy = Mockito.spy(rideServiceImpl);
+        Mockito.doReturn(emptyDriverList).when(rideServiceSpy).filterDriversByRideCriteria(activeDriverList, false, false, vehicleType, 2, 6f);
+
+        rideServiceSpy.requestQuickRideBooking(ride);
+
+        verify(rideRepositoryMocked, atLeastOnce()).save(ride);
+        assertEquals(RideStatus.REJECTED, ride.getRideStatus());
+        assertEquals("Nažalost, trenutno nemamo dostupnih vozila sa zadatim kriterijumima.", ride.getRejection().getRejectionReason());
+
+
+    }
+
+
+    @Test
+    public void requestQuickRideBookingRejectedBecauseNoSchedulableBetweenDriversWithoutNextBookingTest() throws Exception {
+
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.getUsername()).thenReturn("Dave");
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        when(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).thenReturn(user);
+        Mockito.when(userRepositoryMocked.findByUsername("Dave")).thenReturn(user);
+
+        Ride ride = new Ride();
+        List<Ride> rideList = new ArrayList<>();
+        List<Driver> activeDriverList = new ArrayList<>();
+        Driver driver = Mockito.mock(Driver.class);
+        activeDriverList.add(driver);
+        List<Driver> emptyDriverList = new ArrayList<>();
+        Mockito.when(rideRepositoryMocked.findAllByPassengerAndRideStatus(any(), any())).thenReturn(rideList);
+        Mockito.when(driverServiceMocked.getActiveDrivers()).thenReturn(activeDriverList);
+        Mockito.when(driverServiceMocked.getFreeActiveDrivers(activeDriverList)).thenReturn(emptyDriverList);
+        Mockito.when(driverServiceMocked.getDriversWithoutNextBooking(activeDriverList)).thenReturn(activeDriverList);
+
+        Route route = Mockito.mock(Route.class);
+        List<Route> routeList = new ArrayList<>();
+        routeList.add(route);
+        ride.setRoutes(routeList);
+        ride.setPetTransportFlag(false);
+        ride.setBabyTransportFlag(false);
+        VehicleType vehicleType = Mockito.mock(VehicleType.class);
+        ride.setVehicleType(vehicleType);
+        ride.setNumberOfPassengers(2);
+        Mockito.when(routeServiceMocked.fetchRouteLengthMeters(route)).thenReturn(4000l);
+        Mockito.when(routeServiceMocked.fetchRouteDurationMinutes(route)).thenReturn(6f);
+
+        RideServiceImpl rideServiceImpl = new RideServiceImpl(rideRepositoryMocked, driverServiceMocked, routeServiceMocked, userRepositoryMocked, panicRepositoryMocked, routeRepositoryMocked, notificationServiceMocked, vehicleTypeRepositoryMocked, template );
+        RideServiceImpl rideServiceSpy = Mockito.spy(rideServiceImpl);
+        Mockito.doReturn(activeDriverList).when(rideServiceSpy).filterDriversByRideCriteria(activeDriverList, false, false, vehicleType, 2, 6f);
+        Mockito.doReturn(emptyDriverList).when(rideServiceSpy).filterDriversBySchedule(activeDriverList, ride);
+
+        rideServiceSpy.requestQuickRideBooking(ride);
+
+        verify(rideRepositoryMocked, atLeastOnce()).save(ride);
+        assertEquals(RideStatus.REJECTED, ride.getRideStatus());
+        assertEquals("Nažalost, trenutno nemamo dostupne vozace sa traženim kriterijumima.", ride.getRejection().getRejectionReason());
+
+
+    }
+
 
 
     @Test
@@ -389,6 +484,196 @@ public class RideServiceUnitTests {
 
     }
 
+    @Test
+    public void scheduledRideBookingRejectedPassengerHasActiveRideTest() throws Exception {
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.getUsername()).thenReturn("Dave");
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        when(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).thenReturn(user);
+        Mockito.when(userRepositoryMocked.findByUsername("Dave")).thenReturn(user);
+
+        Ride ride = new Ride();
+        List<Ride> rideList = new ArrayList<>();
+        rideList.add(ride);
+
+        Mockito.when(rideRepositoryMocked.findAllByPassengerAndRideStatus(any(), any())).thenReturn(rideList);
+
+        rideService.scheduledRideBooking(ride);
+
+        verify(rideRepositoryMocked, atLeastOnce()).save(ride);
+        assertEquals(RideStatus.REJECTED, ride.getRideStatus());
+        assertEquals("Izvinite, ne možete zakazati novu vožnju, dok imate drugu aktivnu vožnju.", ride.getRejection().getRejectionReason());
+    }
+
+
+    @Test
+    public void scheduledRideBookingRejectedBecauseMoreThanFiveHoursInAdvanceTest() throws Exception {
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.getUsername()).thenReturn("Dave");
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        when(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).thenReturn(user);
+        Mockito.when(userRepositoryMocked.findByUsername("Dave")).thenReturn(user);
+
+        Ride ride = new Ride();
+        LocalDateTime rideStartTime = LocalDateTime.now().plusHours(8l);
+        ride.setStartTime(rideStartTime);
+        List<Ride> rideList = new ArrayList<>();
+
+        Mockito.when(rideRepositoryMocked.findAllByPassengerAndRideStatus(any(), any())).thenReturn(rideList);
+
+
+        rideService.scheduledRideBooking(ride);
+
+        verify(rideRepositoryMocked, atLeastOnce()).save(ride);
+        assertEquals(RideStatus.REJECTED, ride.getRideStatus());
+        assertEquals("Izvinite, ne možete zakazati vožnju više od 5 sati unapred.", ride.getRejection().getRejectionReason());
+    }
+
+
+    @Test
+    public void scheduledRideBookingRejectedBecauseNoActiveDriversTest() throws Exception {
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.getUsername()).thenReturn("Dave");
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        when(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).thenReturn(user);
+        Mockito.when(userRepositoryMocked.findByUsername("Dave")).thenReturn(user);
+
+        Ride ride = new Ride();
+        LocalDateTime rideStartTime = LocalDateTime.now().plusHours(2l);
+        ride.setStartTime(rideStartTime);
+        List<Ride> rideList = new ArrayList<>();
+        List<Driver> driverList = new ArrayList<>();
+
+        Mockito.when(rideRepositoryMocked.findAllByPassengerAndRideStatus(any(), any())).thenReturn(rideList);
+        Mockito.when(rideRepositoryMocked.findAllByPassengerAndRideStatus(any(), any())).thenReturn(rideList);
+        Mockito.when(driverServiceMocked.getActiveDrivers()).thenReturn(driverList);
+
+        rideService.scheduledRideBooking(ride);
+
+        verify(rideRepositoryMocked, atLeastOnce()).save(ride);
+        assertEquals(RideStatus.REJECTED, ride.getRideStatus());
+        assertEquals("Nažalost, trenutno nema aktivnih vozača.", ride.getRejection().getRejectionReason());
+    }
+
+
+
+    @Test
+    public void scheduledRideBookingRejectedBecauseNoAppropriateDriversTest() throws Exception {
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.getUsername()).thenReturn("Dave");
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        when(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).thenReturn(user);
+        Mockito.when(userRepositoryMocked.findByUsername("Dave")).thenReturn(user);
+
+        Ride ride = new Ride();
+        LocalDateTime rideStartTime = LocalDateTime.now().plusHours(2l);
+        ride.setStartTime(rideStartTime);
+        List<Ride> rideList = new ArrayList<>();
+        List<Driver> activeDriverList = new ArrayList<>();
+        Driver driver = Mockito.mock(Driver.class);
+        activeDriverList.add(driver);
+        List<Driver> emptyDriverList = new ArrayList<>();
+
+        Mockito.when(rideRepositoryMocked.findAllByPassengerAndRideStatus(any(), any())).thenReturn(rideList);
+        Mockito.when(driverServiceMocked.getActiveDrivers()).thenReturn(activeDriverList);
+
+        Route route = Mockito.mock(Route.class);
+        List<Route> routeList = new ArrayList<>();
+        routeList.add(route);
+        ride.setRoutes(routeList);
+        ride.setPetTransportFlag(false);
+        ride.setBabyTransportFlag(false);
+        VehicleType vehicleType = Mockito.mock(VehicleType.class);
+        ride.setVehicleType(vehicleType);
+        ride.setNumberOfPassengers(2);
+        Mockito.when(routeServiceMocked.fetchRouteLengthMeters(route)).thenReturn(4000l);
+        Mockito.when(routeServiceMocked.fetchRouteDurationMinutes(route)).thenReturn(6f);
+
+        RideServiceImpl rideServiceImpl = new RideServiceImpl(rideRepositoryMocked, driverServiceMocked, routeServiceMocked, userRepositoryMocked, panicRepositoryMocked, routeRepositoryMocked, notificationServiceMocked, vehicleTypeRepositoryMocked, template );
+        RideServiceImpl rideServiceSpy = Mockito.spy(rideServiceImpl);
+        Mockito.doReturn(activeDriverList).when(rideServiceSpy).filterDriversByRideCriteria(activeDriverList, false, false, vehicleType, 2, 6f);
+        Mockito.doReturn(emptyDriverList).when(rideServiceSpy).filterDriversBySchedule(any(), any());
+
+
+        rideServiceSpy.scheduledRideBooking(ride);
+
+
+        verify(rideRepositoryMocked, atLeastOnce()).save(ride);
+        assertEquals(RideStatus.REJECTED, ride.getRideStatus());
+        assertEquals("Za zadati termin nemamo dostupne vozace sa traženim kriterijumima.", ride.getRejection().getRejectionReason());
+    }
+
+
+
+    @Test
+    public void scheduledRideBookingSuccessfulTest() throws Exception {
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.getUsername()).thenReturn("Dave");
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        when(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).thenReturn(user);
+        Mockito.when(userRepositoryMocked.findByUsername("Dave")).thenReturn(user);
+
+        Ride ride = new Ride();
+        LocalDateTime rideStartTime = LocalDateTime.now().plusHours(2l);
+        ride.setStartTime(rideStartTime);
+        List<Ride> rideList = new ArrayList<>();
+        List<Driver> activeDriverList = new ArrayList<>();
+        Driver driver = Mockito.mock(Driver.class);
+        activeDriverList.add(driver);
+        List<Driver> emptyDriverList = new ArrayList<>();
+
+        Mockito.when(rideRepositoryMocked.findAllByPassengerAndRideStatus(any(), any())).thenReturn(rideList);
+        Mockito.when(driverServiceMocked.getActiveDrivers()).thenReturn(activeDriverList);
+
+        Route route = Mockito.mock(Route.class);
+        List<Route> routeList = new ArrayList<>();
+        routeList.add(route);
+        ride.setRoutes(routeList);
+        ride.setPetTransportFlag(false);
+        ride.setBabyTransportFlag(false);
+        VehicleType vehicleType = Mockito.mock(VehicleType.class);
+        ride.setVehicleType(vehicleType);
+        ride.setNumberOfPassengers(2);
+        Mockito.when(routeServiceMocked.fetchRouteLengthMeters(route)).thenReturn(4000l);
+        Mockito.when(routeServiceMocked.fetchRouteDurationMinutes(route)).thenReturn(6f);
+
+        RideServiceImpl rideServiceImpl = new RideServiceImpl(rideRepositoryMocked, driverServiceMocked, routeServiceMocked, userRepositoryMocked, panicRepositoryMocked, routeRepositoryMocked, notificationServiceMocked, vehicleTypeRepositoryMocked, template );
+        RideServiceImpl rideServiceSpy = Mockito.spy(rideServiceImpl);
+        Mockito.doReturn(activeDriverList).when(rideServiceSpy).filterDriversByRideCriteria(activeDriverList, false, false, vehicleType, 2, 6f);
+        Mockito.doReturn(activeDriverList).when(rideServiceSpy).filterDriversBySchedule(activeDriverList, ride);
+
+        Mockito.when(driverServiceMocked.selectCurrentlyClosestDriver(any(), any())).thenReturn(driver);
+
+        Mockito.doReturn(320f).when(rideServiceSpy).calculateRidePrice(4000l, vehicleType);
+
+
+        rideServiceSpy.scheduledRideBooking(ride);
+
+
+        verify(rideRepositoryMocked, atLeastOnce()).save(ride);
+        assertEquals(driver, ride.getDriver());
+        assertEquals(rideStartTime, ride.getStartTime());
+        assertEquals(rideStartTime.plusMinutes(6l), ride.getFinishTime());
+        assertEquals(RideStatus.PENDING, ride.getRideStatus());
+        assertEquals(vehicleType, ride.getVehicleType());
+        assertEquals(true, ride.getScheduled());
+
+    }
 
 
 

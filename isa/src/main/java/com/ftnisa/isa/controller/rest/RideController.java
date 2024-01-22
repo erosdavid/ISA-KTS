@@ -34,7 +34,7 @@ public class RideController {
     private final DriverService driverService;
     private final SimpMessagingTemplate template;
 
-    @PreAuthorize("hasRole('USER')")
+    //@PreAuthorize("hasRole('USER')")
     @PostMapping("/booking")
     @Transactional
     public ResponseEntity<RideDto> rideBooking(@RequestBody RideBookingRequestDto rideBookingRequestDTO) {

@@ -219,6 +219,7 @@ public class User implements UserDetails {
         return roles.contains(role);
     }
 
+    
     @Override
     public String toString() {
         return "User{" +
