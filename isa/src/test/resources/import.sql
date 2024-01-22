@@ -39,7 +39,3 @@ VALUES (true, '123456', false, 3, 1),
        (true, '123456', false, 4, 2),
        (true, '123456', false, 5, 3);
 
-INSERT INTO isa_ride(id, baby_transport_flag, estimated_duration, favourite_flag, finish_time, number_of_passengers, panic_flag, pet_transport_flag, ride_status, route_optimization_criteria, scheduled_flag, start_time, total_price, driver, passenger, vehicle_type)
-values (1, true, 180000000000, false, 2024-01-22 01:33:25.63301, 2, false, false, FINISHED, BY_TIME, false, 2024-01-22 01:30:25.63301, 197.2, 3, 2, 1),
-       (2, true, 180000000000, false, 2024-01-22 01:33:25.63301, 2, false, false, FINISHED, BY_TIME, false, 2024-01-22 01:30:25.63301, 197.2, 5, 2, 1),
-
