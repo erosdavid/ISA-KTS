@@ -1,4 +1,4 @@
-import { KeyValue, buildUrl } from 'app/utils/query-string.utils';
+import { KeyValue, buildUrl } from '../utils/query-string.utils';
 import axios from 'axios';
 
 const client = axios.create({

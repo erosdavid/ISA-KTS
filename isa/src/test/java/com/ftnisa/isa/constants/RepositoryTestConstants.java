@@ -1,4 +1,4 @@
-package com.ftnisa.isa.repository;
+package com.ftnisa.isa.constants;
 
 import com.ftnisa.isa.model.user.Driver;
 import com.ftnisa.isa.model.user.Passenger;

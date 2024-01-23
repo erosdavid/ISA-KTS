@@ -1,5 +1,5 @@
 import { Driver, User, Vehicle } from 'app/model/User';
-import { getRequest, postRequest, putRequest } from 'app/service/base.service';
+import { getRequest, postRequest, putRequest } from '../service/base.service';
 import { RegisterUser } from 'app/service/auth.service';
 import { DriverLocation, DriverStatus } from 'app/model/Location';
 

@@ -2,9 +2,7 @@ package com.ftnisa.isa.service.rides;
 
 import com.ftnisa.isa.constants.RideBookingConstants;
 import com.ftnisa.isa.dto.ride.RideBookingRequestDto;
-import com.ftnisa.isa.exception.TempRouteExpired;
 import com.ftnisa.isa.model.location.Location;
-import com.ftnisa.isa.model.ride.Panic;
 import com.ftnisa.isa.model.ride.Ride;
 import com.ftnisa.isa.model.ride.RideStatus;
 import com.ftnisa.isa.model.route.Route;
@@ -20,8 +18,6 @@ import com.ftnisa.isa.service.RouteService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.AdditionalAnswers;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -680,7 +676,7 @@ public class RideServiceUnitTests {
     @Test
     public void bookAQuickRideSuccessfulTest() throws Exception {
 
-        RideBookingRequestDto rideBookingRequestDto = RideBookingConstants.returnRideBookingRequestDto();
+        RideBookingRequestDto rideBookingRequestDto = RideBookingConstants.createRideBookingRequestDto();
         Route route = Mockito.mock(Route.class);
         Mockito.when(routeRepositoryMocked.findById(any())).thenReturn(Optional.of(route));
         VehicleType vehicleType = Mockito.mock(VehicleType.class);
@@ -709,7 +705,7 @@ public class RideServiceUnitTests {
 
         assertThrows(Exception.class,
                 ()->{
-                    RideBookingRequestDto rideBookingRequestDto = RideBookingConstants.returnRideBookingRequestDto();
+                    RideBookingRequestDto rideBookingRequestDto = RideBookingConstants.createRideBookingRequestDto();
                     Mockito.when(routeRepositoryMocked.findById(any())).thenReturn(null);
                     rideService.bookARide(rideBookingRequestDto);
                 });
@@ -721,7 +717,7 @@ public class RideServiceUnitTests {
 
         assertThrows(Exception.class,
                 ()->{
-                    RideBookingRequestDto rideBookingRequestDto = RideBookingConstants.returnRideBookingRequestDto();
+                    RideBookingRequestDto rideBookingRequestDto = RideBookingConstants.createRideBookingRequestDto();
                     Mockito.when(vehicleTypeRepositoryMocked.findById(any())).thenReturn(null);
                     rideService.bookARide(rideBookingRequestDto);
                 });
@@ -731,7 +727,7 @@ public class RideServiceUnitTests {
     @Test
     public void bookAScheduledRideSuccessfulTest() throws Exception {
 
-        RideBookingRequestDto rideBookingRequestDto = RideBookingConstants.returnRideBookingRequestDto();
+        RideBookingRequestDto rideBookingRequestDto = RideBookingConstants.createRideBookingRequestDto();
         rideBookingRequestDto.setScheduled(true);
         rideBookingRequestDto.setScheduledStartTime(OffsetDateTime.now().plusHours(1l));
         Route route = Mockito.mock(Route.class);

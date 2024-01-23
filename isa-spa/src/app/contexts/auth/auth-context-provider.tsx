@@ -1,10 +1,10 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { User, UserRole } from 'app/model/User';
-import { getUserInfo } from 'app/service/user.service';
-import { useLoader } from 'app/contexts/loader/loader-context-provider';
-import { signOut } from 'app/service/auth.service';
-import { useWs } from 'app/contexts/ws/ws-provider';
+import { getUserInfo } from '../../service/user.service';
+import { useLoader } from '../../contexts/loader/loader-context-provider';
+import { signOut } from '../../service/auth.service';
+import { useWs } from '../../contexts/ws/ws-provider';
 
 export const ACCESS_TOKEN_CACHE = 'access_token';
 
