@@ -46,7 +46,7 @@ public class RideController {
         }
     }
 
-    @PreAuthorize("hasRole('USER')")
+    //@PreAuthorize("hasRole('USER')")
     @PostMapping("/{id}/clone")
     public ResponseEntity<RideDto> recreateRide(@PathVariable int id, @RequestBody RecreateRideDto recreateRideDto) {
         try {
@@ -74,7 +74,7 @@ public class RideController {
         }
     }
 
-    @PreAuthorize("hasRole('DRIVER')")
+    //@PreAuthorize("hasRole('DRIVER')")
     @PutMapping("/{id}/reject")
     public ResponseEntity<Void> rejectRideByDriver(@PathVariable int id,
             @RequestBody RideRejectionRequestDto rideRejectionRequestDto) {

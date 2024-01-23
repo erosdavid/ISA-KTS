@@ -1,9 +1,9 @@
 package com.ftnisa.isa.repository;
 
+import com.ftnisa.isa.constants.RepositoryTestConstants;
 import com.ftnisa.isa.model.ride.Ride;
 import com.ftnisa.isa.model.ride.RideStatus;
 import com.ftnisa.isa.model.user.Driver;
-import com.ftnisa.isa.model.user.Passenger;
 import com.ftnisa.isa.model.user.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,8 +14,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-
-import javax.persistence.criteria.CriteriaBuilder;
 
 import static org.junit.Assert.assertEquals;
 
