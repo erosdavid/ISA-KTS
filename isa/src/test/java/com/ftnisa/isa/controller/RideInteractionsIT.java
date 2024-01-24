@@ -3,14 +3,11 @@ package com.ftnisa.isa.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ftnisa.isa.constants.RideBookingConstants;
+import com.ftnisa.isa.dto.ride.PanicRequestDto;
 import com.ftnisa.isa.dto.ride.RideAcceptanceDto;
-import com.ftnisa.isa.dto.ride.RideBookingRequestDto;
 import com.ftnisa.isa.dto.ride.RideRejectionRequestDto;
-import com.ftnisa.isa.integrations.ors.responses.routing.geojson.GeoJSONIndividualRouteResponse;
-import com.ftnisa.isa.model.location.Location;
 import com.ftnisa.isa.model.ride.Ride;
 import com.ftnisa.isa.model.ride.RideStatus;
-import com.ftnisa.isa.model.route.Route;
 import com.ftnisa.isa.model.user.Driver;
 import com.ftnisa.isa.model.user.Role;
 import com.ftnisa.isa.model.user.User;
@@ -24,18 +21,17 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
+import java.security.Principal;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -132,7 +128,7 @@ public class RideInteractionsIT {
 
     @WithMockUser(username = "nekiputnik", roles={"USER"})
     @Test
-    public void acceptDriveByUserSuccessfulTest() throws Exception{
+    public void acceptRideByUserSuccessfulTest() throws Exception{
 
         RideAcceptanceDto rideAcceptanceDto =new RideAcceptanceDto();
         rideAcceptanceDto.setAccepted(true);
@@ -168,7 +164,7 @@ public class RideInteractionsIT {
 
     @WithUserDetails(value = "testvozac1", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
-    public void rejectDriveByDriverSuccessfulTest() throws Exception{
+    public void rejectRideByDriverSuccessfulTest() throws Exception{
 
         RideRejectionRequestDto rideRejectionRequestDto = new RideRejectionRequestDto();
         rideRejectionRequestDto.setReason("Ne voza mi se danas");
@@ -200,7 +196,7 @@ public class RideInteractionsIT {
 
     @WithMockUser(username = "nekivozac", roles={"DRIVER"})
     @Test
-    public void startDriveSuccessfulTest() throws Exception{
+    public void startRideSuccessfulTest() throws Exception{
 
         Ride ride = new Ride();
         ride.setRideStatus(RideStatus.ACCEPTED);
@@ -225,7 +221,7 @@ public class RideInteractionsIT {
 
     @WithMockUser(username = "nekiuser", roles={"USER"})
     @Test
-    public void startDriveUnsuccessfulNotDriverTest() throws Exception {
+    public void startRideUnsuccessfulNotDriverTest() throws Exception {
         //create a ride
         Ride ride = new Ride();
         ride.setRideStatus(RideStatus.ACCEPTED);
@@ -240,12 +236,12 @@ public class RideInteractionsIT {
 
 
         mockMvc.perform(put(url))
-                .andExpect(status().is4xxClientError());
+                .andExpect(status().isForbidden());
     }
 
     @WithMockUser(username = "nekivozac", roles={"DRIVER"})
     @Test
-    public void finishDriveSuccessfulTest() throws Exception{
+    public void finishRideSuccessfulTest() throws Exception{
 
         Ride ride = new Ride();
         ride.setRideStatus(RideStatus.ACTIVE);
@@ -287,6 +283,12 @@ public class RideInteractionsIT {
         mockMvc.perform(put(url))
                 .andExpect(status().is4xxClientError());
     }
+
+
+
+
+
+
 
 
 

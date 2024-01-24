@@ -69,7 +69,6 @@ public class RideBookingTests {
 
 
 
-
     @Test
     public void loginTwoUsersSuccessfulTest(){
         HomePage homePage1 = new HomePage(webDriver1);
@@ -77,7 +76,7 @@ public class RideBookingTests {
         LoginPage loginPage1 = new LoginPage(webDriver1);
 
         loginPage1.login("admin", "admin");
-        WebDriverWait wait = new WebDriverWait(webDriver1, 5l);
+        WebDriverWait wait = new WebDriverWait(webDriver1, 3l);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[class='mx-2']")));
         String username = loginPage1.getUsernameLoggedIn().getText();
 
@@ -89,7 +88,7 @@ public class RideBookingTests {
         LoginPage loginPage2 = new LoginPage(webDriver2);
 
         loginPage2.login("dave", "1111");
-        WebDriverWait wait2 = new WebDriverWait(webDriver2, 5l);
+        WebDriverWait wait2 = new WebDriverWait(webDriver2, 3l);
         wait2.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[class='mx-2']")));
         String username2 = loginPage2.getUsernameLoggedIn().getText();
 
@@ -106,7 +105,7 @@ public class RideBookingTests {
         homePage2.getLoginButton().click();
         LoginPage loginPage2 = new LoginPage(webDriver2);
         loginPage2.login("multiplavozac", "1111");
-        WebDriverWait wait2 = new WebDriverWait(webDriver2, 5l);
+        WebDriverWait wait2 = new WebDriverWait(webDriver2, 3l);
         wait2.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[class='mx-2']")));
         String username2 = loginPage2.getUsernameLoggedIn().getText();
         assertEquals("multipla vozac", username2);
@@ -116,12 +115,12 @@ public class RideBookingTests {
         homePage1.getLoginButton().click();
         LoginPage loginPage1 = new LoginPage(webDriver1);
         loginPage1.login("dave", "1111");
-        WebDriverWait wait1 = new WebDriverWait(webDriver1, 5l);
+        WebDriverWait wait1 = new WebDriverWait(webDriver1, 3l);
         wait1.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[class='mx-2']")));
         String username = loginPage1.getUsernameLoggedIn().getText();
         assertEquals("Dave Dave", username);
 
-        //Passenger: Search for route
+        //Passenger: Search for routes
         SearchForRoutePage searchForRoutePage1 = new SearchForRoutePage(webDriver1);
         wait1.until(ExpectedConditions.textToBePresentInElement(searchForRoutePage1.getTitle(), "Zakaži vožnju:"));
         searchForRoutePage1.searchForRoute();
@@ -152,7 +151,7 @@ public class RideBookingTests {
         rideInProgressDriverPage2.getFinishRideButton().click();
 
 
-        //Passenger: ride finished check
+        //Assert
         RideFinishedPage rideFinishedPage1 = new RideFinishedPage(webDriver1);
         assertTrue(rideFinishedPage1.pageValidation());
 
@@ -166,7 +165,7 @@ public class RideBookingTests {
         homePage2.getLoginButton().click();
         LoginPage loginPage2 = new LoginPage(webDriver2);
         loginPage2.login("multiplavozac", "1111");
-        WebDriverWait wait2 = new WebDriverWait(webDriver2, 5l);
+        WebDriverWait wait2 = new WebDriverWait(webDriver2, 3l);
         wait2.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[class='mx-2']")));
         String username2 = loginPage2.getUsernameLoggedIn().getText();
         assertEquals("multipla vozac", username2);
@@ -176,7 +175,7 @@ public class RideBookingTests {
         homePage1.getLoginButton().click();
         LoginPage loginPage1 = new LoginPage(webDriver1);
         loginPage1.login("dave", "1111");
-        WebDriverWait wait1 = new WebDriverWait(webDriver1, 5l);
+        WebDriverWait wait1 = new WebDriverWait(webDriver1, 3l);
         wait1.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[class='mx-2']")));
         String username = loginPage1.getUsernameLoggedIn().getText();
         assertEquals("Dave Dave", username);
@@ -192,15 +191,16 @@ public class RideBookingTests {
 
         //Passenger: enter ride criteria
         RideCriteriaPage rideCriteriaPage1 = new RideCriteriaPage(webDriver1);
-
         rideCriteriaPage1.enterCriteria(3, "1", false, false, false, "");
         wait1.until(ExpectedConditions.elementToBeClickable(rideCriteriaPage1.getFindRideButton()));
         rideCriteriaPage1.getFindRideButton().click();
 
+        //Passenger: reject ride
         ConfirmRidePage confirmRidePage1 = new ConfirmRidePage(webDriver1);
         wait1.until(ExpectedConditions.elementToBeClickable(confirmRidePage1.getRejectRideButton()));
         confirmRidePage1.getRejectRideButton().click();
 
+        //Assert: on page 'odbijena voznja'
         wait1.until(ExpectedConditions.textToBePresentInElement(webDriver1.findElement(By.xpath("//h2[@class='h2 mb-4 text-center']")), "Odbijena vožnja:"));
         String titleText = webDriver1.findElement(By.xpath("//h2[@class='h2 mb-4 text-center']")).getText();
         assertEquals("Odbijena vožnja:", titleText);
@@ -217,7 +217,7 @@ public class RideBookingTests {
         homePage1.getLoginButton().click();
         LoginPage loginPage1 = new LoginPage(webDriver1);
         loginPage1.login("dave", "1111");
-        WebDriverWait wait1 = new WebDriverWait(webDriver1, 5l);
+        WebDriverWait wait1 = new WebDriverWait(webDriver1, 3l);
         wait1.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[class='mx-2']")));
         String username = loginPage1.getUsernameLoggedIn().getText();
         assertEquals("Dave Dave", username);
@@ -243,7 +243,7 @@ public class RideBookingTests {
         homePage2.getLoginButton().click();
         LoginPage loginPage2 = new LoginPage(webDriver2);
         loginPage2.login("multiplavozac", "1111");
-        WebDriverWait wait2 = new WebDriverWait(webDriver2, 5l);
+        WebDriverWait wait2 = new WebDriverWait(webDriver2, 3l);
         wait2.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[class='mx-2']")));
         String username2 = loginPage2.getUsernameLoggedIn().getText();
         assertEquals("multipla vozac", username2);
@@ -253,7 +253,7 @@ public class RideBookingTests {
         homePage1.getLoginButton().click();
         LoginPage loginPage1 = new LoginPage(webDriver1);
         loginPage1.login("dave", "1111");
-        WebDriverWait wait1 = new WebDriverWait(webDriver1, 5l);
+        WebDriverWait wait1 = new WebDriverWait(webDriver1, 3l);
         wait1.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[class='mx-2']")));
         String username = loginPage1.getUsernameLoggedIn().getText();
         assertEquals("Dave Dave", username);
@@ -273,6 +273,7 @@ public class RideBookingTests {
         wait1.until(ExpectedConditions.elementToBeClickable(rideCriteriaPage1.getFindRideButton()));
         rideCriteriaPage1.getFindRideButton().click();
 
+        //Assert
         wait1.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='ant-notification-notice-description']")));
         WebElement warning = webDriver1.findElement(By.xpath("//div[@class='ant-notification-notice-description']"));
         assertEquals("Nažalost, trenutno nemamo dostupnih vozila sa zadatim kriterijumima.", warning.getText());
@@ -286,7 +287,7 @@ public class RideBookingTests {
         homePage2.getLoginButton().click();
         LoginPage loginPage2 = new LoginPage(webDriver2);
         loginPage2.login("golfvozac", "1111");
-        WebDriverWait wait2 = new WebDriverWait(webDriver2, 5l);
+        WebDriverWait wait2 = new WebDriverWait(webDriver2, 3l);
         wait2.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[class='mx-2']")));
         String username2 = loginPage2.getUsernameLoggedIn().getText();
         assertEquals("golf vozac", username2);
@@ -296,7 +297,7 @@ public class RideBookingTests {
         homePage1.getLoginButton().click();
         LoginPage loginPage1 = new LoginPage(webDriver1);
         loginPage1.login("dave", "1111");
-        WebDriverWait wait1 = new WebDriverWait(webDriver1, 5l);
+        WebDriverWait wait1 = new WebDriverWait(webDriver1, 3l);
         wait1.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[class='mx-2']")));
         String username = loginPage1.getUsernameLoggedIn().getText();
         assertEquals("Dave Dave", username);
@@ -316,6 +317,7 @@ public class RideBookingTests {
         wait1.until(ExpectedConditions.elementToBeClickable(rideCriteriaPage1.getFindRideButton()));
         rideCriteriaPage1.getFindRideButton().click();
 
+        //Assert
         wait1.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='ant-notification-notice-description']")));
         WebElement warning = webDriver1.findElement(By.xpath("//div[@class='ant-notification-notice-description']"));
         assertEquals("Nažalost, trenutno nemamo dostupnih vozila sa zadatim kriterijumima.", warning.getText());
@@ -332,7 +334,7 @@ public class RideBookingTests {
         homePage2.getLoginButton().click();
         LoginPage loginPage2 = new LoginPage(webDriver2);
         loginPage2.login("multiplavozac", "1111");
-        WebDriverWait wait2 = new WebDriverWait(webDriver2, 5l);
+        WebDriverWait wait2 = new WebDriverWait(webDriver2, 3l);
         wait2.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[class='mx-2']")));
         String username2 = loginPage2.getUsernameLoggedIn().getText();
         assertEquals("multipla vozac", username2);
@@ -342,7 +344,7 @@ public class RideBookingTests {
         homePage1.getLoginButton().click();
         LoginPage loginPage1 = new LoginPage(webDriver1);
         loginPage1.login("dave", "1111");
-        WebDriverWait wait1 = new WebDriverWait(webDriver1, 5l);
+        WebDriverWait wait1 = new WebDriverWait(webDriver1, 3l);
         wait1.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[class='mx-2']")));
         String username = loginPage1.getUsernameLoggedIn().getText();
         assertEquals("Dave Dave", username);
@@ -362,6 +364,7 @@ public class RideBookingTests {
         wait1.until(ExpectedConditions.elementToBeClickable(rideCriteriaPage1.getFindRideButton()));
         rideCriteriaPage1.getFindRideButton().click();
 
+        //Assert
         wait1.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='ant-notification-notice-description']")));
         WebElement warning = webDriver1.findElement(By.xpath("//div[@class='ant-notification-notice-description']"));
         assertEquals("Nažalost, trenutno nemamo dostupnih vozila sa zadatim kriterijumima.", warning.getText());
@@ -376,7 +379,7 @@ public class RideBookingTests {
         homePage2.getLoginButton().click();
         LoginPage loginPage2 = new LoginPage(webDriver2);
         loginPage2.login("multiplavozac", "1111");
-        WebDriverWait wait2 = new WebDriverWait(webDriver2, 5l);
+        WebDriverWait wait2 = new WebDriverWait(webDriver2, 3l);
         wait2.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[class='mx-2']")));
         String username2 = loginPage2.getUsernameLoggedIn().getText();
         assertEquals("multipla vozac", username2);
@@ -386,7 +389,7 @@ public class RideBookingTests {
         homePage1.getLoginButton().click();
         LoginPage loginPage1 = new LoginPage(webDriver1);
         loginPage1.login("dave", "1111");
-        WebDriverWait wait1 = new WebDriverWait(webDriver1, 5l);
+        WebDriverWait wait1 = new WebDriverWait(webDriver1, 3l);
         wait1.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[class='mx-2']")));
         String username = loginPage1.getUsernameLoggedIn().getText();
         assertEquals("Dave Dave", username);
@@ -409,6 +412,7 @@ public class RideBookingTests {
         wait1.until(ExpectedConditions.elementToBeClickable(rideCriteriaPage1.getFindRideButton()));
         rideCriteriaPage1.getFindRideButton().click();
 
+        //Assert
         wait1.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='ant-notification-notice-description']")));
         WebElement warning = webDriver1.findElement(By.xpath("//div[@class='ant-notification-notice-description']"));
         assertEquals("Izvinite, ne možete zakazati vožnju više od 5 sati unapred.", warning.getText());
@@ -422,7 +426,7 @@ public class RideBookingTests {
         homePage2.getLoginButton().click();
         LoginPage loginPage2 = new LoginPage(webDriver2);
         loginPage2.login("multiplavozac", "1111");
-        WebDriverWait wait2 = new WebDriverWait(webDriver2, 5l);
+        WebDriverWait wait2 = new WebDriverWait(webDriver2, 3l);
         wait2.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[class='mx-2']")));
         String username2 = loginPage2.getUsernameLoggedIn().getText();
         assertEquals("multipla vozac", username2);
@@ -432,7 +436,7 @@ public class RideBookingTests {
         homePage1.getLoginButton().click();
         LoginPage loginPage1 = new LoginPage(webDriver1);
         loginPage1.login("dave", "1111");
-        WebDriverWait wait1 = new WebDriverWait(webDriver1, 5l);
+        WebDriverWait wait1 = new WebDriverWait(webDriver1, 3l);
         wait1.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[class='mx-2']")));
         String username = loginPage1.getUsernameLoggedIn().getText();
         assertEquals("Dave Dave", username);
@@ -455,6 +459,7 @@ public class RideBookingTests {
         wait1.until(ExpectedConditions.elementToBeClickable(rideCriteriaPage1.getFindRideButton()));
         rideCriteriaPage1.getFindRideButton().click();
 
+        //Assert
         wait1.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='ant-notification-notice-description']")));
         WebElement warning = webDriver1.findElement(By.xpath("//div[@class='ant-notification-notice-description']"));
         assertEquals("Izvinite, ne možete zakazati vožnju više od 5 sati unapred.", warning.getText());
@@ -469,7 +474,7 @@ public class RideBookingTests {
         homePage2.getLoginButton().click();
         LoginPage loginPage2 = new LoginPage(webDriver2);
         loginPage2.login("multiplavozac", "1111");
-        WebDriverWait wait2 = new WebDriverWait(webDriver2, 5l);
+        WebDriverWait wait2 = new WebDriverWait(webDriver2, 3l);
         wait2.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[class='mx-2']")));
         String username2 = loginPage2.getUsernameLoggedIn().getText();
         assertEquals("multipla vozac", username2);
@@ -479,7 +484,7 @@ public class RideBookingTests {
         homePage1.getLoginButton().click();
         LoginPage loginPage1 = new LoginPage(webDriver1);
         loginPage1.login("dave", "1111");
-        WebDriverWait wait1 = new WebDriverWait(webDriver1, 5l);
+        WebDriverWait wait1 = new WebDriverWait(webDriver1, 3l);
         wait1.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[class='mx-2']")));
         String username = loginPage1.getUsernameLoggedIn().getText();
         assertEquals("Dave Dave", username);
@@ -502,6 +507,7 @@ public class RideBookingTests {
         wait1.until(ExpectedConditions.elementToBeClickable(rideCriteriaPage1.getFindRideButton()));
         rideCriteriaPage1.getFindRideButton().click();
 
+        //Assert
         ConfirmRidePage confirmRidePage1 = new ConfirmRidePage(webDriver1);
         wait1.until(ExpectedConditions.elementToBeClickable(confirmRidePage1.getConfirmRideButton()));
         assertTrue(confirmRidePage1.pageValidation());

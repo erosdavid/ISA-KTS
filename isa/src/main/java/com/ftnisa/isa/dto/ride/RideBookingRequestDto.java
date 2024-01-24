@@ -25,4 +25,11 @@ public class RideBookingRequestDto {
     public LocalDateTime getScheduledStartTime() {
         return scheduledStartTime.atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
     }
+
+    @Override
+    public String toString() {
+        return "RideBookingRequestDto{" +
+                "routeId=" + routeId +
+                '}';
+    }
 }
