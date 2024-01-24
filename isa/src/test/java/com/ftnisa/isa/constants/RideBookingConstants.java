@@ -1,6 +1,7 @@
 package com.ftnisa.isa.constants;
 
 import com.ftnisa.isa.dto.ride.RideBookingRequestDto;
+import com.ftnisa.isa.integrations.ors.APIEnums;
 import com.ftnisa.isa.integrations.ors.responses.routing.geojson.GeoJSONIndividualRouteResponse;
 import com.ftnisa.isa.model.location.Location;
 import com.ftnisa.isa.model.ride.Ride;
@@ -9,12 +10,16 @@ import com.ftnisa.isa.model.ride.RouteOptimizationCriteria;
 import com.ftnisa.isa.model.route.Route;
 import com.ftnisa.isa.model.user.Driver;
 import com.ftnisa.isa.model.user.User;
+import com.ftnisa.isa.model.vehicle.Vehicle;
+import com.ftnisa.isa.model.vehicle.VehicleType;
 import com.ftnisa.isa.repository.RouteRepository;
+import com.ftnisa.isa.repository.VehicleTypeRepository;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
 
 public class RideBookingConstants {
+
 
     private RideBookingConstants(){}
 
@@ -58,6 +63,7 @@ public class RideBookingConstants {
 
         return driver;
     }
+
 
     public static User createUser(){
         User user = new User();

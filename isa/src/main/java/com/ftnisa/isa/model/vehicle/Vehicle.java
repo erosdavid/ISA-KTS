@@ -123,4 +123,5 @@ public class Vehicle {
     public void setCurrentLocation(Location currentLocation) {
         this.currentLocation = currentLocation;
     }
+
 }
