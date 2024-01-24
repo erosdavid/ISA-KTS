@@ -76,9 +76,11 @@ public class RideServiceUnitTests {
 
 
 
+    //Quick ride booking should fail as passenger already has an active ride
     @Test
     public void requestQuickRideBookingRejectedBecauseActiveRideTest() throws Exception {
 
+        //Given
         User user = Mockito.mock(User.class);
         Mockito.when(user.getUsername()).thenReturn("Dave");
         Authentication authentication = mock(Authentication.class);
@@ -94,8 +96,10 @@ public class RideServiceUnitTests {
 
         Mockito.when(rideRepositoryMocked.findAllByPassengerAndRideStatus(any(), any())).thenReturn(rideList);
 
+        //When
         rideService.requestQuickRideBooking(ride);
 
+        //Then
         verify(rideRepositoryMocked, atLeastOnce()).save(ride);
         assertEquals(RideStatus.REJECTED, ride.getRideStatus());
         assertEquals("Izvinite, ne možete zakazati novu vožnju, dok imate drugu aktivnu vožnju.", ride.getRejection().getRejectionReason());
@@ -105,6 +109,7 @@ public class RideServiceUnitTests {
     @Test
     public void requestQuickRideBookingRejectedBecauseNoActiveDrivers() throws Exception {
 
+        //Given
         User user = Mockito.mock(User.class);
         Mockito.when(user.getUsername()).thenReturn("Dave");
         Authentication authentication = mock(Authentication.class);
@@ -120,8 +125,10 @@ public class RideServiceUnitTests {
         Mockito.when(rideRepositoryMocked.findAllByPassengerAndRideStatus(any(), any())).thenReturn(rideList);
         Mockito.when(driverServiceMocked.getActiveDrivers()).thenReturn(driverList);
 
+        //When
         rideService.requestQuickRideBooking(ride);
 
+        //Then
         verify(rideRepositoryMocked, atLeastOnce()).save(ride);
         assertEquals(RideStatus.REJECTED, ride.getRideStatus());
         assertEquals("Nažalost, trenutno nema aktivnih vozača.", ride.getRejection().getRejectionReason());
@@ -132,6 +139,7 @@ public class RideServiceUnitTests {
     @Test
     public void requestQuickRideBookingRejectedBecauseNoFreeActiveAndNoUnbookedDriversTest() throws Exception {
 
+        //Given
         User user = Mockito.mock(User.class);
         Mockito.when(user.getUsername()).thenReturn("Dave");
         Authentication authentication = mock(Authentication.class);
@@ -153,8 +161,10 @@ public class RideServiceUnitTests {
         Mockito.when(driverServiceMocked.getDriversWithoutNextBooking(activeDriverList)).thenReturn(emptyDriverList);
 
 
+        //When
         rideService.requestQuickRideBooking(ride);
 
+        //Then
         verify(rideRepositoryMocked, atLeastOnce()).save(ride);
         assertEquals(RideStatus.REJECTED, ride.getRideStatus());
         assertEquals("Nažalost, trenutno nema dostupnih vozača za Vašu vožnju. Pokušajte malo kasnije.", ride.getRejection().getRejectionReason());
@@ -164,6 +174,7 @@ public class RideServiceUnitTests {
     @Test
     public void requestQuickRideBookingRejectedBecauseNoAppropriateDriversTest() throws Exception {
 
+        //Given
         User user = Mockito.mock(User.class);
         Mockito.when(user.getUsername()).thenReturn("Dave");
         Authentication authentication = mock(Authentication.class);
@@ -200,8 +211,10 @@ public class RideServiceUnitTests {
         RideServiceImpl rideServiceSpy = Mockito.spy(rideServiceImpl);
         Mockito.doReturn(emptyDriverList).when(rideServiceSpy).filterDriversByRideCriteria(activeDriverList, false, false, vehicleType, 2, 6f);
 
+        //When
         rideServiceSpy.requestQuickRideBooking(ride);
 
+        //Then
         verify(rideRepositoryMocked, atLeastOnce()).save(ride);
         assertEquals(RideStatus.REJECTED, ride.getRideStatus());
         assertEquals("Nažalost, trenutno nemamo dostupnih vozila sa zadatim kriterijumima.", ride.getRejection().getRejectionReason());
@@ -213,6 +226,7 @@ public class RideServiceUnitTests {
     @Test
     public void requestQuickRideBookingRejectedBecauseNoSchedulableDriversTest() throws Exception {
 
+        //Given
         User user = Mockito.mock(User.class);
         Mockito.when(user.getUsername()).thenReturn("Dave");
         Authentication authentication = mock(Authentication.class);
@@ -250,8 +264,10 @@ public class RideServiceUnitTests {
         Mockito.doReturn(activeDriverList).when(rideServiceSpy).filterDriversByRideCriteria(activeDriverList, false, false, vehicleType, 2, 6f);
         Mockito.doReturn(emptyDriverList).when(rideServiceSpy).filterDriversBySchedule(activeDriverList, ride);
 
+       //When
         rideServiceSpy.requestQuickRideBooking(ride);
 
+        //Then
         verify(rideRepositoryMocked, atLeastOnce()).save(ride);
         assertEquals(RideStatus.REJECTED, ride.getRideStatus());
         assertEquals("Nažalost, trenutno nemamo dostupne vozace sa traženim kriterijumima.", ride.getRejection().getRejectionReason());
@@ -263,6 +279,7 @@ public class RideServiceUnitTests {
     @Test
     public void requestQuickRideBookingSuccessfulExistingFreeDriverTest() throws Exception {
 
+        //Given
         User user = Mockito.mock(User.class);
         Mockito.when(user.getUsername()).thenReturn("Dave");
         Authentication authentication = mock(Authentication.class);
@@ -308,9 +325,11 @@ public class RideServiceUnitTests {
         Mockito.doReturn(320f).when(rideServiceSpy).calculateRidePrice(4000l, vehicleType);
 
 
+        //When
         rideServiceSpy.requestQuickRideBooking(ride);
 
 
+        //Then
         verify(rideRepositoryMocked, atLeastOnce()).save(ride);
         assertEquals(driver, ride.getDriver());
         assertEquals(startTime, ride.getStartTime());
@@ -323,6 +342,7 @@ public class RideServiceUnitTests {
     @Test
     public void requestQuickRideBookingRejectedBecauseNoAppropriateDriversWithoutNextBookingTest() throws Exception {
 
+        //Given
         User user = Mockito.mock(User.class);
         Mockito.when(user.getUsername()).thenReturn("Dave");
         Authentication authentication = mock(Authentication.class);
@@ -359,8 +379,11 @@ public class RideServiceUnitTests {
         RideServiceImpl rideServiceSpy = Mockito.spy(rideServiceImpl);
         Mockito.doReturn(emptyDriverList).when(rideServiceSpy).filterDriversByRideCriteria(activeDriverList, false, false, vehicleType, 2, 6f);
 
+        //When
         rideServiceSpy.requestQuickRideBooking(ride);
 
+
+        //Then
         verify(rideRepositoryMocked, atLeastOnce()).save(ride);
         assertEquals(RideStatus.REJECTED, ride.getRideStatus());
         assertEquals("Nažalost, trenutno nemamo dostupnih vozila sa zadatim kriterijumima.", ride.getRejection().getRejectionReason());
@@ -372,6 +395,7 @@ public class RideServiceUnitTests {
     @Test
     public void requestQuickRideBookingRejectedBecauseNoSchedulableBetweenDriversWithoutNextBookingTest() throws Exception {
 
+        //Given
         User user = Mockito.mock(User.class);
         Mockito.when(user.getUsername()).thenReturn("Dave");
         Authentication authentication = mock(Authentication.class);
@@ -409,8 +433,10 @@ public class RideServiceUnitTests {
         Mockito.doReturn(activeDriverList).when(rideServiceSpy).filterDriversByRideCriteria(activeDriverList, false, false, vehicleType, 2, 6f);
         Mockito.doReturn(emptyDriverList).when(rideServiceSpy).filterDriversBySchedule(activeDriverList, ride);
 
+        //When
         rideServiceSpy.requestQuickRideBooking(ride);
 
+        //Then
         verify(rideRepositoryMocked, atLeastOnce()).save(ride);
         assertEquals(RideStatus.REJECTED, ride.getRideStatus());
         assertEquals("Nažalost, trenutno nemamo dostupne vozace sa traženim kriterijumima.", ride.getRejection().getRejectionReason());
@@ -423,6 +449,7 @@ public class RideServiceUnitTests {
     @Test
     public void requestQuickRideBookingSuccessfulExistingDriverWithoutNextBookingTest() throws Exception {
 
+        //Given
         User user = Mockito.mock(User.class);
         Mockito.when(user.getUsername()).thenReturn("Dave");
         Authentication authentication = mock(Authentication.class);
@@ -468,9 +495,11 @@ public class RideServiceUnitTests {
         Mockito.doReturn(320f).when(rideServiceSpy).calculateRidePrice(4000l, vehicleType);
 
 
+        //When
         rideServiceSpy.requestQuickRideBooking(ride);
 
 
+        //Then
         verify(rideRepositoryMocked, atLeastOnce()).save(ride);
         assertEquals(driver, ride.getDriver());
         assertEquals(startTime, ride.getStartTime());
@@ -482,6 +511,8 @@ public class RideServiceUnitTests {
 
     @Test
     public void scheduledRideBookingRejectedPassengerHasActiveRideTest() throws Exception {
+
+        //Given
         User user = Mockito.mock(User.class);
         Mockito.when(user.getUsername()).thenReturn("Dave");
         Authentication authentication = mock(Authentication.class);
@@ -497,8 +528,10 @@ public class RideServiceUnitTests {
 
         Mockito.when(rideRepositoryMocked.findAllByPassengerAndRideStatus(any(), any())).thenReturn(rideList);
 
+        //When
         rideService.scheduledRideBooking(ride);
 
+        //Then
         verify(rideRepositoryMocked, atLeastOnce()).save(ride);
         assertEquals(RideStatus.REJECTED, ride.getRideStatus());
         assertEquals("Izvinite, ne možete zakazati novu vožnju, dok imate drugu aktivnu vožnju.", ride.getRejection().getRejectionReason());
@@ -507,6 +540,8 @@ public class RideServiceUnitTests {
 
     @Test
     public void scheduledRideBookingRejectedBecauseMoreThanFiveHoursInAdvanceTest() throws Exception {
+
+        //Given
         User user = Mockito.mock(User.class);
         Mockito.when(user.getUsername()).thenReturn("Dave");
         Authentication authentication = mock(Authentication.class);
@@ -524,8 +559,10 @@ public class RideServiceUnitTests {
         Mockito.when(rideRepositoryMocked.findAllByPassengerAndRideStatus(any(), any())).thenReturn(rideList);
 
 
+        //When
         rideService.scheduledRideBooking(ride);
 
+        //Then
         verify(rideRepositoryMocked, atLeastOnce()).save(ride);
         assertEquals(RideStatus.REJECTED, ride.getRideStatus());
         assertEquals("Izvinite, ne možete zakazati vožnju više od 5 sati unapred.", ride.getRejection().getRejectionReason());
@@ -534,6 +571,8 @@ public class RideServiceUnitTests {
 
     @Test
     public void scheduledRideBookingRejectedBecauseNoActiveDriversTest() throws Exception {
+
+        //Given
         User user = Mockito.mock(User.class);
         Mockito.when(user.getUsername()).thenReturn("Dave");
         Authentication authentication = mock(Authentication.class);
@@ -553,8 +592,10 @@ public class RideServiceUnitTests {
         Mockito.when(rideRepositoryMocked.findAllByPassengerAndRideStatus(any(), any())).thenReturn(rideList);
         Mockito.when(driverServiceMocked.getActiveDrivers()).thenReturn(driverList);
 
+        //When
         rideService.scheduledRideBooking(ride);
 
+        //Then
         verify(rideRepositoryMocked, atLeastOnce()).save(ride);
         assertEquals(RideStatus.REJECTED, ride.getRideStatus());
         assertEquals("Nažalost, trenutno nema aktivnih vozača.", ride.getRejection().getRejectionReason());
@@ -564,6 +605,8 @@ public class RideServiceUnitTests {
 
     @Test
     public void scheduledRideBookingRejectedBecauseNoAppropriateDriversTest() throws Exception {
+
+        //Given
         User user = Mockito.mock(User.class);
         Mockito.when(user.getUsername()).thenReturn("Dave");
         Authentication authentication = mock(Authentication.class);
@@ -603,9 +646,11 @@ public class RideServiceUnitTests {
         Mockito.doReturn(emptyDriverList).when(rideServiceSpy).filterDriversBySchedule(any(), any());
 
 
+        //When
         rideServiceSpy.scheduledRideBooking(ride);
 
 
+        //Then
         verify(rideRepositoryMocked, atLeastOnce()).save(ride);
         assertEquals(RideStatus.REJECTED, ride.getRideStatus());
         assertEquals("Za zadati termin nemamo dostupne vozace sa traženim kriterijumima.", ride.getRejection().getRejectionReason());
@@ -615,6 +660,8 @@ public class RideServiceUnitTests {
 
     @Test
     public void scheduledRideBookingSuccessfulTest() throws Exception {
+
+        //Given
         User user = Mockito.mock(User.class);
         Mockito.when(user.getUsername()).thenReturn("Dave");
         Authentication authentication = mock(Authentication.class);
@@ -658,9 +705,11 @@ public class RideServiceUnitTests {
         Mockito.doReturn(320f).when(rideServiceSpy).calculateRidePrice(4000l, vehicleType);
 
 
+        //When
         rideServiceSpy.scheduledRideBooking(ride);
 
 
+        //Then
         verify(rideRepositoryMocked, atLeastOnce()).save(ride);
         assertEquals(driver, ride.getDriver());
         assertEquals(rideStartTime, ride.getStartTime());
@@ -676,6 +725,7 @@ public class RideServiceUnitTests {
     @Test
     public void bookAQuickRideSuccessfulTest() throws Exception {
 
+        //Given
         RideBookingRequestDto rideBookingRequestDto = RideBookingConstants.createRideBookingRequestDto();
         Route route = Mockito.mock(Route.class);
         Mockito.when(routeRepositoryMocked.findById(any())).thenReturn(Optional.of(route));
@@ -686,9 +736,11 @@ public class RideServiceUnitTests {
         Mockito.doReturn(null).when(rideServiceSpy).requestQuickRideBooking(any());
 
 
+        //When
         Ride ride = rideServiceSpy.bookARide(rideBookingRequestDto);
 
 
+        //Then
         verify(rideServiceSpy, atLeastOnce()).requestQuickRideBooking(any());
         assertEquals(rideBookingRequestDto.getBabyTransportFlag(), ride.getBabyTransportFlag());
         assertEquals(rideBookingRequestDto.getPetTransportFlag(), ride.getPetTransportFlag());
@@ -727,6 +779,7 @@ public class RideServiceUnitTests {
     @Test
     public void bookAScheduledRideSuccessfulTest() throws Exception {
 
+        //Given
         RideBookingRequestDto rideBookingRequestDto = RideBookingConstants.createRideBookingRequestDto();
         rideBookingRequestDto.setScheduled(true);
         rideBookingRequestDto.setScheduledStartTime(OffsetDateTime.now().plusHours(1l));
@@ -739,9 +792,11 @@ public class RideServiceUnitTests {
         Mockito.doReturn(null).when(rideServiceSpy).scheduledRideBooking(any());
 
 
+        //When
         Ride ride = rideServiceSpy.bookARide(rideBookingRequestDto);
 
 
+        //Then
         verify(rideServiceSpy, atLeastOnce()).scheduledRideBooking(any());
         assertEquals(rideBookingRequestDto.getBabyTransportFlag(), ride.getBabyTransportFlag());
         assertEquals(rideBookingRequestDto.getPetTransportFlag(), ride.getPetTransportFlag());
@@ -788,6 +843,7 @@ public class RideServiceUnitTests {
     @Test
     public void finishRideByDriverTest(){
 
+        //Given
         Ride ride = new Ride();
         Driver driver = Mockito.mock(Driver.class);
         ride.setDriver(driver);
@@ -795,8 +851,10 @@ public class RideServiceUnitTests {
         ride.setPassenger(passenger);
         Mockito.when(rideRepositoryMocked.findOneById(any())).thenReturn(ride);
 
+        //When
         Ride expectedRide = rideService.finishRideByDriver(1);
 
+        //Then
         assertEquals(RideStatus.FINISHED, expectedRide.getRideStatus());
         verify(rideRepositoryMocked, atLeastOnce()).save(ride);
         verify(notificationServiceMocked, atLeastOnce()).createInstantNotification(
@@ -821,6 +879,7 @@ public class RideServiceUnitTests {
     @Test
     public void shouldRejectRideByDriverWhenExistingRideIdTest(){
 
+        //Given
         User user = Mockito.mock(User.class);
         Mockito.when(user.getUsername()).thenReturn("Dave");
         Authentication authentication = mock(Authentication.class);
@@ -839,8 +898,10 @@ public class RideServiceUnitTests {
         Integer rideId = 1;
         String reason = "why not";
 
+        //When
         rideService.rejectRideByDriver(rideId, reason);
 
+        //Then
         assertEquals(RideStatus.REJECTED, ride.getRideStatus());
         assertEquals(reason, ride.getRejection().getRejectionReason());
         verify(notificationServiceMocked, atLeastOnce()).createInstantNotification(
@@ -853,6 +914,7 @@ public class RideServiceUnitTests {
     @Test
     public void shouldRejectRideByDriverWhenExistingRideIdNoReasonTest(){
 
+        //Given
         User user = Mockito.mock(User.class);
         Mockito.when(user.getUsername()).thenReturn("Dave");
         Authentication authentication = mock(Authentication.class);
@@ -871,8 +933,10 @@ public class RideServiceUnitTests {
         Integer rideId = 1;
         String reason = null;
 
+        //When
         rideService.rejectRideByDriver(rideId, reason);
 
+        //Then
         assertEquals(RideStatus.REJECTED, ride.getRideStatus());
         assertEquals(reason, ride.getRejection().getRejectionReason());
         verify(rideRepositoryMocked, atLeastOnce()).save(ride);
@@ -897,6 +961,7 @@ public class RideServiceUnitTests {
     @Test
     public void finalizeRideBookingAcceptedTest(){
 
+        //Given
         Ride ride = new Ride();
         Passenger passenger = Mockito.mock(Passenger.class);
         ride.setPassenger(passenger);
@@ -906,8 +971,10 @@ public class RideServiceUnitTests {
         Mockito.when(ride.getDriver().getUsername()).thenReturn("Vozac Jovan");
         Mockito.when(rideRepositoryMocked.findOneById(any())).thenReturn(ride);
 
+        //When
         rideService.finalizeRideBooking(true, 1);
 
+        //Then
         assertEquals(RideStatus.ACCEPTED, ride.getRideStatus());
         verify(notificationServiceMocked, atLeastOnce()).createInstantNotification(
                 passenger, "Vaša vožnja je upravo zakazana. Vozilo stiže za 9 minuta. Status vožnje možete pratiti na Vašem dešbordu.");
@@ -933,13 +1000,16 @@ public class RideServiceUnitTests {
     @Test
     public void finalizeRideBookingRejectedTest(){
 
+        //Given
         Ride ride = new Ride();
         Passenger passenger = Mockito.mock(Passenger.class);
         ride.setPassenger(passenger);
         Mockito.when(rideRepositoryMocked.findOneById(any())).thenReturn(ride);
 
+        //When
         rideService.finalizeRideBooking(false, 1);
 
+        //Then
         assertEquals(RideStatus.REJECTED, ride.getRideStatus());
         assertEquals("Passenger did not accept the ride", ride.getRejection().getRejectionReason());
         verify(rideRepositoryMocked, atLeastOnce()).save(ride);
@@ -961,6 +1031,7 @@ public class RideServiceUnitTests {
     @ParameterizedTest
     @CsvSource({"3250, 50f, 282.5f", "3250, 120f, 510f", "500, 200f, 220f", "0, 50f, 120f"})
     public void calculatePriceTest(long rideLength, float pricePerKm, float expectedPrice){
+
         VehicleType vehicleType = Mockito.mock(VehicleType.class);
         Mockito.when(vehicleType.getPricePerKm()).thenReturn(pricePerKm);
 
@@ -968,43 +1039,6 @@ public class RideServiceUnitTests {
 
         assertEquals(expectedPrice, price);
     }
-
-
-//    @Test
-//    public void panicTest(){
-//
-//        User user = new User();
-//        Mockito.when(user.getId()).thenReturn(2);
-//        Integer rideId = 1;
-//        String panicReason = "Cudno me gleda ovaj!";
-//        Ride ride = new Ride();
-//        Mockito.when(rideRepositoryMocked.findById(1)).thenReturn(Optional.of(ride));
-//
-//        Panic panic = rideService.panic(user, rideId, panicReason);
-//
-//        assertEquals(user, panic.getUser());
-//        assertEquals(ride, panic.getRide());
-//        assertEquals(LocalDateTime.now(), panic.getPanicTime());
-//        verify(rideRepositoryMocked, atLeastOnce()).save(ride);
-//    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

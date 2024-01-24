@@ -7,6 +7,7 @@ import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.*;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
@@ -66,10 +67,10 @@ public class Route {
     @Lob
     private GeoJSONIndividualRouteResponse geo;
 
-    @PrePersist
-    public void onPrePersist() {
-        createdAt = Instant.now();
-    }
+//    @PrePersist
+//    public void onPrePersist() {
+//        createdAt = Instant.now();
+//    }
 
     public Route(Location startLocation, Location finishLocation, List<IntermediateStop> stops, float length, Duration estimatedDuration, float routePrice, Ride ride, Instant createdAt, GeoJSONIndividualRouteResponse geo) {
         this.startLocation = startLocation;

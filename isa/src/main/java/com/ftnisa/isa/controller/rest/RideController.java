@@ -99,7 +99,7 @@ public class RideController {
         return ResponseEntity.ok().build();
     }
 
-    @PreAuthorize("hasAnyRole('DRIVER','USER')")
+    //@PreAuthorize("hasAnyRole('DRIVER','USER')")
     @PutMapping("/{id}/panic")
     public ResponseEntity<Void> panic(@PathVariable int id, @RequestBody PanicRequestDto panicRequestDto,
             Principal principal) {
