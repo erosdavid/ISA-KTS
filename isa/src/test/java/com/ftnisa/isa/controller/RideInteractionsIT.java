@@ -98,6 +98,7 @@ public class RideInteractionsIT {
     }
 
 
+    //Testing the passenger rejecting the ride
     @WithMockUser(username = "nekiputnik", roles={"USER"})
     @Test
     public void rejectDriveByUserSuccessfulTest() throws Exception{
@@ -126,6 +127,7 @@ public class RideInteractionsIT {
         assertEquals("Passenger did not accept the ride", rideRepository.findOneById(ride.getId()).getRejection().getRejectionReason());
     }
 
+    //testing the passenger accepting the ride
     @WithMockUser(username = "nekiputnik", roles={"USER"})
     @Test
     public void acceptRideByUserSuccessfulTest() throws Exception{
@@ -162,6 +164,7 @@ public class RideInteractionsIT {
 
 
 
+    //Testing the ride being rejected by the driver
     @WithUserDetails(value = "testvozac1", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     public void rejectRideByDriverSuccessfulTest() throws Exception{
@@ -194,6 +197,7 @@ public class RideInteractionsIT {
 
 
 
+    //testing the ride being started by the driver
     @WithMockUser(username = "nekivozac", roles={"DRIVER"})
     @Test
     public void startRideSuccessfulTest() throws Exception{
@@ -219,6 +223,7 @@ public class RideInteractionsIT {
     }
 
 
+    //testing the ride being started by a user that has no DRIVER authorization, should return 403
     @WithMockUser(username = "nekiuser", roles={"USER"})
     @Test
     public void startRideUnsuccessfulNotDriverTest() throws Exception {
@@ -239,6 +244,7 @@ public class RideInteractionsIT {
                 .andExpect(status().isForbidden());
     }
 
+    //testing the driver finishing the ride
     @WithMockUser(username = "nekivozac", roles={"DRIVER"})
     @Test
     public void finishRideSuccessfulTest() throws Exception{
@@ -264,6 +270,7 @@ public class RideInteractionsIT {
     }
 
 
+    //testing the ride being finished by a user that has no DRIVER authorization, should return 403
     @WithMockUser(username = "nekiuser", roles={"USER"})
     @Test
     public void finishDriveUnsuccessfulNotDriverTest() throws Exception {
