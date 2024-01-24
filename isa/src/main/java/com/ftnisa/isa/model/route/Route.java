@@ -55,12 +55,15 @@ public class Route {
     private Ride ride;
 
     @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
+//    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at")
     @Getter
     private Instant createdAt;
 
-    @Type(type = "jsonb")
-    @Column(columnDefinition = "jsonb", name = "geo")
+//    @Type(type = "jsonb")
+//    @Column(columnDefinition = "jsonb", name = "geo")
+    @Column(name = "geo")
+    @Lob
     private GeoJSONIndividualRouteResponse geo;
 
     @PrePersist

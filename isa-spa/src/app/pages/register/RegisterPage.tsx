@@ -1,13 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { Form, Input } from 'antd';
 
-import { IsaButton } from 'app/components/isa-button/IsaButton';
-import { MainHeader } from 'app/components/main-header/MainHeader';
-import { useLoader } from 'app/contexts/loader/loader-context-provider';
-import { RegisterUser, register } from 'app/service/auth.service';
+import { IsaButton } from '../../components/isa-button/IsaButton';
+import { MainHeader } from '../../components/main-header/MainHeader';
+import { RegisterUser, register } from '../../service/auth.service';
 import { useState } from 'react';
 import { AxiosError } from 'axios';
-import { useNotifications } from 'app/contexts/notifications/notifications-provider';
+import { useNotifications } from '../../contexts/notifications/notifications-provider';
+import { useLoader } from '../../contexts/loader/loader-context-provider';
 
 type RegisterFormPage = RegisterUser;
 
