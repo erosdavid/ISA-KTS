@@ -62,10 +62,12 @@ public class RideBookingIT {
 
 
 
+    //Testing: booking a quick ride, booking should succeed
     @WithUserDetails(value = "dave", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     public void bookAQuickRideSuccessfulTest() throws Exception{
 
+        //When
         RideBookingRequestDto rideBookingRequestDto = new RideBookingRequestDto();
         rideBookingRequestDto.setPetTransportFlag(false);
         rideBookingRequestDto.setBabyTransportFlag(false);
@@ -85,22 +87,26 @@ public class RideBookingIT {
                 routeOptimizationCriteria
                 );
 
+        //Then
         ResultActions resultActions = mockMvc.perform(
                         MockMvcRequestBuilders.post(url)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(payload))
                 .andExpect(status().isCreated());
 
+        //Assert
         RideDto rideDto = extractResponseEntity(resultActions);
         assertEquals(RideStatus.PENDING, rideDto.getRideStatus());
 
     }
 
 
+    //Quick ride booking should be unsuccessful, as there are no pet friendly drivers in the system with STANDARD vehicle
     @WithUserDetails(value = "dave", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     public void bookAQuickRideUnsuccessfulNoAppropriateDriverTest() throws Exception{
 
+        //When
         RideBookingRequestDto rideBookingRequestDto = new RideBookingRequestDto();
         rideBookingRequestDto.setPetTransportFlag(true);
         rideBookingRequestDto.setBabyTransportFlag(true);
@@ -111,6 +117,7 @@ public class RideBookingIT {
         rideBookingRequestDto.setRouteOptimizationCriteria(RouteOptimizationCriteria.BY_LENGTH);
         rideBookingRequestDto.setRouteId(1);
 
+        //Then
         String url = "/api/ride/booking";
         objectMapper.findAndRegisterModules();
         ResultActions resultActions = mockMvc.perform(
@@ -119,6 +126,7 @@ public class RideBookingIT {
                                 .content(objectMapper.writeValueAsString(rideBookingRequestDto)))
                 .andExpect(status().isCreated());
 
+        //Assert
         RideDto rideDto = extractResponseEntity(resultActions);
 
         assertEquals(RideStatus.REJECTED, rideDto.getRideStatus());
@@ -128,10 +136,13 @@ public class RideBookingIT {
 
     }
 
+
+    //Quick ride booking should be unsuccessful, as there are too many passengers
     @WithUserDetails(value = "dave", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     public void bookAQuickRideUnsuccessfulTooManyPassengerTest() throws Exception{
 
+        //When
         RideBookingRequestDto rideBookingRequestDto = new RideBookingRequestDto();
         rideBookingRequestDto.setPetTransportFlag(true);
         rideBookingRequestDto.setBabyTransportFlag(true);
@@ -143,6 +154,7 @@ public class RideBookingIT {
         rideBookingRequestDto.setRouteId(1);
 
         String url = "/api/ride/booking";
+        //Then
         objectMapper.findAndRegisterModules();
         ResultActions resultActions = mockMvc.perform(
                         MockMvcRequestBuilders.post(url)
@@ -150,6 +162,7 @@ public class RideBookingIT {
                                 .content(objectMapper.writeValueAsString(rideBookingRequestDto)))
                 .andExpect(status().isCreated());
 
+        //Assert
         RideDto rideDto = extractResponseEntity(resultActions);
         assertEquals(RideStatus.REJECTED, rideDto.getRideStatus());
         Ride ride = rideRepository.findOneById(rideDto.getId());
@@ -159,10 +172,13 @@ public class RideBookingIT {
     }
 
 
+
+    //Scheduled ride booking should be successful
     @WithUserDetails(value = "dave", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     public void bookScheduledRideSuccessfulTest() throws Exception{
 
+        //When
         RideBookingRequestDto rideBookingRequestDto = new RideBookingRequestDto();
         rideBookingRequestDto.setPetTransportFlag(false);
         rideBookingRequestDto.setBabyTransportFlag(false);
@@ -173,6 +189,7 @@ public class RideBookingIT {
         rideBookingRequestDto.setRouteOptimizationCriteria(RouteOptimizationCriteria.BY_LENGTH);
         rideBookingRequestDto.setRouteId(1);
 
+        //Then
         String url = "/api/ride/booking";
         objectMapper.findAndRegisterModules();
         ResultActions resultActions = mockMvc.perform(
@@ -181,16 +198,20 @@ public class RideBookingIT {
                                 .content(objectMapper.writeValueAsString(rideBookingRequestDto)))
                 .andExpect(status().isCreated());
 
+        //Assert
         RideDto rideDto = extractResponseEntity(resultActions);
         assertEquals(RideStatus.PENDING, rideDto.getRideStatus());
 
     }
 
 
+    //Scheduled ride booking should be unsuccessful, as the scheduled start time is more than 5 hours later
+    // 5 hours in advance is the maximum
     @WithUserDetails(value = "dave", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     public void bookScheduledRideUnsuccessfulTooEarlyTest() throws Exception{
 
+        //When
         RideBookingRequestDto rideBookingRequestDto = new RideBookingRequestDto();
         rideBookingRequestDto.setPetTransportFlag(false);
         rideBookingRequestDto.setBabyTransportFlag(false);
@@ -201,6 +222,7 @@ public class RideBookingIT {
         rideBookingRequestDto.setRouteOptimizationCriteria(RouteOptimizationCriteria.BY_LENGTH);
         rideBookingRequestDto.setRouteId(1);
 
+        //Then
         String url = "/api/ride/booking";
         objectMapper.findAndRegisterModules();
         ResultActions resultActions = mockMvc.perform(
@@ -209,6 +231,7 @@ public class RideBookingIT {
                                 .content(objectMapper.writeValueAsString(rideBookingRequestDto)))
                 .andExpect(status().isCreated());
 
+        //Assert
         RideDto rideDto = extractResponseEntity(resultActions);
         assertEquals(RideStatus.REJECTED, rideDto.getRideStatus());
 

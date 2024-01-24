@@ -106,6 +106,7 @@ public class RideServiceUnitTests {
 
     }
 
+    //Quick ride booking should fail as there are no currently active drivers in the system
     @Test
     public void requestQuickRideBookingRejectedBecauseNoActiveDrivers() throws Exception {
 
@@ -136,6 +137,7 @@ public class RideServiceUnitTests {
     }
 
 
+    //Quick ride booking should fail as there are no free and active drivers without a next booking (after their current ride)
     @Test
     public void requestQuickRideBookingRejectedBecauseNoFreeActiveAndNoUnbookedDriversTest() throws Exception {
 
@@ -171,6 +173,7 @@ public class RideServiceUnitTests {
 
     }
 
+    //Quick ride booking should fail as there a no drivers that match the users ride criteria
     @Test
     public void requestQuickRideBookingRejectedBecauseNoAppropriateDriversTest() throws Exception {
 
@@ -223,6 +226,7 @@ public class RideServiceUnitTests {
     }
 
 
+    //Quick ride booking should fail as there are no drivers without overlapping rides
     @Test
     public void requestQuickRideBookingRejectedBecauseNoSchedulableDriversTest() throws Exception {
 
@@ -276,6 +280,7 @@ public class RideServiceUnitTests {
     }
 
 
+    //Quick ride booking successful. There are currently free drivers in the system
     @Test
     public void requestQuickRideBookingSuccessfulExistingFreeDriverTest() throws Exception {
 
@@ -339,6 +344,7 @@ public class RideServiceUnitTests {
 
     }
 
+    //quick ride booking should be rejected as there are no drivers that match the criteria and have no next booking already
     @Test
     public void requestQuickRideBookingRejectedBecauseNoAppropriateDriversWithoutNextBookingTest() throws Exception {
 
@@ -392,6 +398,7 @@ public class RideServiceUnitTests {
     }
 
 
+    //quick ride booking should be rejected as there are no drivers without overlapping rides
     @Test
     public void requestQuickRideBookingRejectedBecauseNoSchedulableBetweenDriversWithoutNextBookingTest() throws Exception {
 
@@ -446,6 +453,7 @@ public class RideServiceUnitTests {
 
 
 
+    //quick ride booking successful as there are existing drivers without overlapping rides
     @Test
     public void requestQuickRideBookingSuccessfulExistingDriverWithoutNextBookingTest() throws Exception {
 
@@ -509,6 +517,7 @@ public class RideServiceUnitTests {
 
     }
 
+    //scheduled ride booking should be rejected as the passenger already has an active ride
     @Test
     public void scheduledRideBookingRejectedPassengerHasActiveRideTest() throws Exception {
 
@@ -538,6 +547,7 @@ public class RideServiceUnitTests {
     }
 
 
+    //scheduled ride booking should be rejected as its being booked more than 5 hours in advance
     @Test
     public void scheduledRideBookingRejectedBecauseMoreThanFiveHoursInAdvanceTest() throws Exception {
 
@@ -569,6 +579,7 @@ public class RideServiceUnitTests {
     }
 
 
+    //scheduled ride booking should be rejected as there are no currently active drivers in teh system
     @Test
     public void scheduledRideBookingRejectedBecauseNoActiveDriversTest() throws Exception {
 
@@ -603,6 +614,7 @@ public class RideServiceUnitTests {
 
 
 
+    //scheduled ride booking should be rejected as no drivers match the criteria
     @Test
     public void scheduledRideBookingRejectedBecauseNoAppropriateDriversTest() throws Exception {
 
@@ -658,6 +670,7 @@ public class RideServiceUnitTests {
 
 
 
+    //scheduled ride booking should be successful
     @Test
     public void scheduledRideBookingSuccessfulTest() throws Exception {
 
@@ -722,6 +735,7 @@ public class RideServiceUnitTests {
 
 
 
+    //quick ride booking should be successful
     @Test
     public void bookAQuickRideSuccessfulTest() throws Exception {
 
@@ -752,6 +766,7 @@ public class RideServiceUnitTests {
 
 
 
+    // ride booking shou fail as there is no route attached or temp route expired
     @Test
     public void bookARideNoRouteTest() {
 
@@ -764,6 +779,7 @@ public class RideServiceUnitTests {
 
     }
 
+    // ride booking should be rejected as there are no drivers with the given vehicle type
     @Test
     public void bookARideNoVehicleTypeTest(){
 
@@ -776,6 +792,7 @@ public class RideServiceUnitTests {
 
     }
 
+    // scheduled ride booking should be successful
     @Test
     public void bookAScheduledRideSuccessfulTest() throws Exception {
 
@@ -807,7 +824,7 @@ public class RideServiceUnitTests {
 
 
 
-    // startRideByDriver() existing rideId
+    // Testing method startRideByDriver() with existing rideId, should succeed
     @Test
     public void startRideByDriverTest(){
 
@@ -840,6 +857,7 @@ public class RideServiceUnitTests {
     }
 
 
+    //testing method for finish ride by driver
     @Test
     public void finishRideByDriverTest(){
 
@@ -864,6 +882,8 @@ public class RideServiceUnitTests {
 
     }
 
+
+    //testing finishing ride by driver with wrong ride id, should fail
     @Test
     public void shouldThrowNullPointerExceptionFinishRideByDriverNonExistingRideIdTest(){
         assertThrows(NullPointerException.class,
@@ -876,6 +896,7 @@ public class RideServiceUnitTests {
 
 
 
+    //testing ride rejection by driver with all the valid input. should pass
     @Test
     public void shouldRejectRideByDriverWhenExistingRideIdTest(){
 
@@ -911,6 +932,7 @@ public class RideServiceUnitTests {
     }
 
 
+    //testing ride rejection by driver, with no rejection reason, should pass
     @Test
     public void shouldRejectRideByDriverWhenExistingRideIdNoReasonTest(){
 
@@ -945,6 +967,7 @@ public class RideServiceUnitTests {
 
 
 
+    //testing ride rejection by driver with wrong ride id, should fail
     @Test
     public void shouldThrowNullPointerExceptionWhenRejectRideByDriverNonExistingRideIdTest(){
 
@@ -958,6 +981,7 @@ public class RideServiceUnitTests {
 
 
 
+    //Testing ride acceptance by user, should succeed
     @Test
     public void finalizeRideBookingAcceptedTest(){
 
@@ -985,6 +1009,7 @@ public class RideServiceUnitTests {
     }
 
 
+    // testing finalizeRideBooking() method, with invalid input, should fail
     @Test
     public void shouldThrowNullPointerExceptionWhenFinalizeRideBookingAcceptedNonExistingRideIdTest(){
 
@@ -997,6 +1022,7 @@ public class RideServiceUnitTests {
     }
 
 
+    // testing finalizeRideBooking() method, with valid input, should succeed
     @Test
     public void finalizeRideBookingRejectedTest(){
 
@@ -1016,6 +1042,7 @@ public class RideServiceUnitTests {
 
     }
 
+    //testing ride rejection by passenger with wrong ride id, should fail
     @Test
     public void shouldThrowNullPointerExceptionWhenFinalizeRideBookingRejectedNonExistingRideIdTest(){
 
@@ -1028,6 +1055,7 @@ public class RideServiceUnitTests {
     }
 
 
+    // calculating the ride price with various parameters
     @ParameterizedTest
     @CsvSource({"3250, 50f, 282.5f", "3250, 120f, 510f", "500, 200f, 220f", "0, 50f, 120f"})
     public void calculatePriceTest(long rideLength, float pricePerKm, float expectedPrice){
